@@ -21,15 +21,10 @@ vagrant up
 ## Подключение ##
 Для получения конфига подключения к `k3s` выполните команду:
 ```
-ssh vagrant@localhost -p 2222 'sudo k3s kubectl config view'
+ssh vagrant@localhost -p 2222 'sudo cat /etc/rancher/k3s/k3s.yaml' >> .kubeconfig
 ```
-В ответ будет напечатан конфиг подключения который вы можете положить (или руками интегрировать, если файл уже есть) в файл `~/.kube/config`.
-Т.к. мы работает локально, то строчку
+Далее можно настроить алиасы, для того чтобы не указывать каждый раз путь до этого конифга:
 ```
-certificate-authority-data: DATA+OMITTED
+alias vkube='kubectl --kubeconfig=/home/$USER/machines/k3s/.kubeconfig'
+alias vhelm='helm --kubeconfig=/home/$USER/machines/k3s/.kubeconfig'
 ```
-можно заменить на
-```
-insecure-skip-tls-verify: true
-```
-Или вы можете зайти в виртуальную машину и увидеть полный конфиг (вместе с сертификатом) в файле `/etc/rancher/k3s/k3s.yaml`

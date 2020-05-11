@@ -6,6 +6,15 @@ Vagrant.configure("2") do |config|
     v.memory = 4096
     v.cpus = 2
   end
-  config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+  config.ssh.guest_port = 2222
+  
+  config.vm.provision :shell, privileged: false do |s|
+    ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
+    s.inline = <<-SHELL
+       echo #{ssh_pub_key} >> /home/$USER/.ssh/authorized_keys
+       sudo bash -c "echo #{ssh_pub_key} >> /root/.ssh/authorized_keys"
+    SHELL
+  end
+  
   config.vm.provision "shell", inline: "curl -sfL https://get.k3s.io | sh -"
 end
